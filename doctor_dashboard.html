@@ -4,6 +4,107 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Doctor Dashboard</title>
+    <style>
+        /* General reset and basic styling */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            padding: 20px;
+        }
+
+        h2 {
+            font-size: 28px;
+            color: #4CAF50;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        /* Container for the patient list */
+        #patientList {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease-in-out;
+        }
+
+        #patientList div {
+            margin-bottom: 15px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            opacity: 0;
+            transform: translateY(-20px);
+            animation: fadeIn 0.5s forwards;
+        }
+
+        #patientList div:nth-child(odd) {
+            background-color: #f0f0f0;
+        }
+
+        strong {
+            color: #4CAF50;
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Logout Button */
+        #logoutButton {
+            display: block;
+            margin: 20px auto;
+            padding: 12px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+
+        #logoutButton:hover {
+            background-color: #45a049;
+        }
+
+        /* Hover and active states for buttons */
+        #logoutButton:active {
+            background-color: #388e3c;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 600px) {
+            body {
+                padding: 15px;
+            }
+
+            h2 {
+                font-size: 24px;
+            }
+
+            #patientList div {
+                padding: 10px;
+            }
+
+            #logoutButton {
+                width: 100%;
+                padding: 14px;
+            }
+        }
+    </style>
 </head>
 <body>
     <h2>Welcome to Doctor Dashboard</h2>
@@ -20,7 +121,7 @@
 
         if (!doctorId) {
             alert("Doctor not signed in!");
-            window.location.href = "doctor_sign_in.html"; // Redirect if no doctor_id
+            window.location.href = "doctor_signin.html"; // Redirect if no doctor_id
         } else {
             // Fetch patients for the logged-in doctor using doctor_id
             fetch(`http://localhost:5000/doctor/${doctorId}/patients`)

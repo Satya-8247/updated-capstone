@@ -5,22 +5,103 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Welcome</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            margin: 50px;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(45deg, #ff8a00, #e52e71, #ff007f);
+            color: #fff;
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+            padding: 20px;
+            overflow: hidden;
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 50px;
+            text-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3);
+            animation: fadeIn 2s ease-in-out forwards;
+        }
+
         .container {
             display: flex;
             justify-content: center;
-            gap: 20px;
-            margin-top: 50px;
+            gap: 30px;
+            opacity: 0;
+            animation: fadeInContainer 2s ease-in-out forwards 0.5s;
         }
+
         button {
-            padding: 15px 30px;
-            font-size: 18px;
+            padding: 20px 40px;
+            font-size: 20px;
             cursor: pointer;
+            border: none;
+            border-radius: 50px;
+            background: #fff;
+            color: #ff007f;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
         }
+
+        button:hover {
+            background-color: #ff007f;
+            color: white;
+            transform: translateY(-5px);
+            box-shadow: 0 15px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        button:active {
+            transform: translateY(2px);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInContainer {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes gradientBG {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+     
     </style>
 </head>
 <body>
@@ -28,6 +109,11 @@
     <div class="container">
         <button onclick="location.href='doctor_signin.html'">Doctor</button>
         <button onclick="location.href='patient_signup.html'">Patient</button>
+    </div>
+    <br>
+    <!-- Leave a Review Button -->
+    <div>
+        <button onclick="window.location.href='rating_review.html'" class="review">Leave a Review</button>
     </div>
 </body>
 </html>

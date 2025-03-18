@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Review and Rating</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            text-align: center;
+            padding: 40px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            color: #ff007f;
+        }
+
+        .rating-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .star {
+            font-size: 2rem;
+            color: #ffd700;
+            cursor: pointer;
+        }
+
+        .star:hover {
+            transform: scale(1.2);
+        }
+
+        .star.selected {
+            color: #ff007f;
+        }
+
+        .review-box {
+            margin-top: 20px;
+            text-align: left;
+            width: 100%;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+            padding: 15px;
+            background-color: #fff;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+        }
+
+        textarea {
+            width: 100%;
+            height: 150px;
+            padding: 10px;
+            font-size: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #ff007f;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #e52e71;
+        }
+    </style>
+</head>
+<body>
+    <h1>Rate Your Experience</h1>
+
+    <div class="rating-container">
+        <!-- Star Ratings -->
+        <span class="star" onclick="selectStar(1)">★</span>
+        <span class="star" onclick="selectStar(2)">★</span>
+        <span class="star" onclick="selectStar(3)">★</span>
+        <span class="star" onclick="selectStar(4)">★</span>
+        <span class="star" onclick="selectStar(5)">★</span>
+    </div>
+
+    <div class="review-box">
+        <h3>Leave Your Review</h3>
+        <textarea id="review" placeholder="Write your review here..."></textarea>
+        <div>
+            <button onclick="submitReview()">Submit Review</button>
+        </div>
+    </div>
+
+    <script>
+        let rating = 0;
+
+        function selectStar(star) {
+            rating = star;
+            const stars = document.querySelectorAll('.star');
+            stars.forEach((starElement, index) => {
+                if (index < star) {
+                    starElement.classList.add('selected');
+                } else {
+                    starElement.classList.remove('selected');
+                }
+            });
+        }
+
+        function submitReview() {
+            const reviewText = document.getElementById('review').value;
+            if (rating === 0 || reviewText === '') {
+                alert("Please provide a rating and a review!");
+                return;
+            }
+            alert(`Thank you for your review! You rated: ${rating} stars.\nReview: ${reviewText}`);
+            // Here, you can send the data to a server or save it as needed
+        }
+    </script>
+</body>
+</html>

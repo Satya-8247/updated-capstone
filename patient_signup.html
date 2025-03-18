@@ -4,23 +4,109 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Patient Sign Up</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #f5f7fa;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            padding: 20px;
+        }
+
+        h2 {
+            font-size: 2.5rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        form {
+            background: #ffffff;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+            color: #555;
+        }
+
+        input {
+            padding: 12px;
+            font-size: 1rem;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        input:focus {
+            border-color: #4caf50;
+        }
+
+        button {
+            padding: 12px;
+            font-size: 1.1rem;
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        h3 {
+            margin-top: 20px;
+            font-size: 1rem;
+            color: #777;
+            text-align: center;
+        }
+
+        button:active {
+            background-color: #388e3c;
+        }
+    </style>
 </head>
 <body>
-    <h2>Patient Sign Up</h2>
-    <form id="patientSignupForm">
-        <label for="name">Name:</label>
-        <input type="text" id="name" required>
-        <br>
-        <label for="email">Email:</label>
-        <input type="email" id="email" required>
-        <br>
-        <label for="password">Password:</label>
-        <input type="password" id="password" required>
-        <br>
-        <button type="submit">Sign Up</button> 
-        <h3>Are you already signed up??</h3> 
-        <button onclick="location.href='patient_signin.html'">Sign In</button>
-    </form>
+    <div>
+        <h2>Patient Sign Up</h2>
+        <form id="patientSignupForm">
+            <label for="name">Name:</label>
+            <input type="text" id="name" required>
+
+            <label for="email">Email:</label>
+            <input type="email" id="email" required>
+
+            <label for="password">Password:</label>
+            <input type="password" id="password" required>
+
+            <button type="submit">Sign Up</button>
+
+            <h3>Are you already signed up?</h3>
+            <button type="button" onclick="location.href='patient_signin.html'">Sign In</button>
+        </form>
+    </div>
 
     <script>
         document.getElementById("patientSignupForm").addEventListener("submit", async function(event) {
@@ -41,7 +127,7 @@
             const data = await response.json();
             if (response.ok) {
                 alert(data.message);
-                // Redirect to patient dashboard (create it later)
+                // Redirect to patient sign-in page
                 window.location.href = "patient_signin.html";
             } else {
                 alert(data.error);

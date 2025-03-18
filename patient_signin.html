@@ -4,6 +4,126 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Patient Sign In</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(45deg, #7b6fdf, #6cc1ff, #ff5c8d);
+            color: #fff;
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+            padding: 20px;
+            overflow: hidden;
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+        }
+
+        h2 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            font-weight: 700;
+            text-shadow: 5px 5px 15px rgba(0, 0, 0, 0.3);
+            animation: fadeIn 2s ease-in-out forwards;
+        }
+
+        form {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            animation: fadeInForm 2s ease-in-out forwards 0.5s;
+        }
+
+        label {
+            font-size: 1.2rem;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        input {
+            padding: 10px;
+            width: 250px;
+            font-size: 1rem;
+            margin-bottom: 20px;
+            border: none;
+            border-radius: 5px;
+            outline: none;
+            transition: all 0.3s ease;
+            background: #fff;
+        }
+
+        input:focus {
+            border: 2px solid #ff5c8d;
+            box-shadow: 0 0 5px rgba(255, 92, 141, 0.8);
+        }
+
+        button {
+            padding: 12px 30px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            border: none;
+            border-radius: 30px;
+            background: #ff5c8d;
+            color: #fff;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        button:hover {
+            background-color: #ff3b72;
+            transform: translateY(-5px);
+            box-shadow: 0 15px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        button:active {
+            transform: translateY(2px);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInForm {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes gradientBG {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+    </style>
 </head>
 <body>
     <h2>Patient Sign In</h2>
@@ -19,28 +139,27 @@
 
     <script>
         document.getElementById("patientLoginForm").addEventListener("submit", async function (event) {
-    event.preventDefault();
+            event.preventDefault();
 
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
+            const email = document.getElementById("email").value;
+            const password = document.getElementById("password").value;
 
-    const response = await fetch("http://localhost:5000/patient/signin", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password })
-    });
+            const response = await fetch("http://localhost:5000/patient/signin", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email, password })
+            });
 
-    const data = await response.json();
-   
-    // Check if patient_id exists instead of "data.success"
-    if (data.patient_name) {  
-        localStorage.setItem("patientName", data.patient_name);
-        window.location.href = "patient_dashboard.html";
-    } else {
-        alert("Invalid credentials. Try again.");
-    }
-});
-
+            const data = await response.json();
+           
+            if (data.patient_name) {
+                localStorage.setItem("patientName", data.patient_name);
+                localStorage.setItem("message", data.message);
+                window.location.href = "patient_dashboard.html";
+            } else {
+                alert("Invalid credentials. Try again.");
+            }
+        });
     </script>
 </body>
 </html>
