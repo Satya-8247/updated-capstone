@@ -180,7 +180,7 @@
     });
 
         async function cancelAppointment(appointmentId) {
-            await fetch(`http://localhost:5000/appointment/${appointmentId}/cancel`, { method: "DELETE" });
+            await fetch(`http://localhost:5000/appointments/cancel/${appointmentId}`, { method: "DELETE" });
             alert("Appointment cancelled.");
             loadAppointments();
         }
@@ -189,12 +189,12 @@
             const newTime = prompt("Enter new time:");
             if (!newTime) return;
 
-            await fetch(`http://localhost:5000/appointment/${appointmentId}/modify`, {
+            await fetch(`http://localhost:5000/appointments/modify/${appointmentId}`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify({ time: newTime })
+                body: JSON.stringify({ new_time_slot: newTime })
             });
 
             alert("Appointment modified.");

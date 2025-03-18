@@ -35,8 +35,10 @@
             const data = await response.json();
             if (response.ok) {
                 alert(data.message);
-                // Redirect to doctor's dashboard (create it later)
-                window.location.href = "doctor_dashboard.html";
+                // Store doctor_id and doctor_name in localStorage
+                localStorage.setItem("doctor_id", data.doctor_id);
+                localStorage.setItem("doctor_name", data.doctor_name);
+                window.location.href = "doctor_dashboard.html"; // Redirect to doctor dashboard
             } else {
                 alert(data.error);
             }
