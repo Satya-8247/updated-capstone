@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Appointment Booking System</title>
+    <link rel="stylesheet" href="style.css">
+    <script defer src="script.js"></script>
+</head>
+<body>
+
+    <!-- Navigation Bar -->
+    <nav>
+        <div class="logo">
+            <img src="assets/logo.png" alt="Logo">
+            <h1>Appointment Booking</h1>
+        </div>
+        <ul>
+            <li><a href="#home">Home</a></li>
+            <li><a href="#doctors">Doctors</a></li>
+            <li><a href="#appointment">Book Appointment</a></li>
+            <li><a href="#dashboard">Dashboard</a></li>
+        </ul>
+    </nav>
+
+    <!-- Hero Section -->
+    <header id="home">
+        <h2>Book Appointments with Top Doctors</h2>
+        <p>Find the best doctors and schedule appointments easily.</p>
+        <a href="#appointment" class="btn">Book Now</a>
+    </header>
+
+    <!-- Doctors Section -->
+    <section id="doctors">
+        <h2>Our Doctors</h2>
+        <div class="doctor-list">
+            <!-- Doctors will be dynamically loaded here -->
+        </div>
+    </section>
+
+    <!-- Appointment Booking Section -->
+    <section id="appointment">
+        <h2>Book an Appointment</h2>
+        <form id="appointmentForm">
+            <label for="doctor">Select Doctor:</label>
+            <select id="doctor" name="doctor" required></select>
+
+            <label for="date">Select Date:</label>
+            <input type="date" id="date" name="date" required>
+
+            <label for="time">Select Time:</label>
+            <input type="time" id="time" name="time" required>
+
+            <button type="submit" class="btn">Book Appointment</button>
+        </form>
+    </section>
+
+    <!-- User Dashboard -->
+    <section id="dashboard">
+        <h2>Your Appointments</h2>
+        <div class="appointment-list">
+            <!-- Appointments will be dynamically loaded here -->
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2025 Appointment Booking System. All rights reserved.</p>
+    </footer>
+
+</body>
+</html>

@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Dashboard</title>
+</head>
+<body>
+    <h2>Patient Dashboard</h2>
+
+    <!-- Existing Appointments -->
+    <h3>Your Appointments</h3>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Doctor</th>
+                <th>Time</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody id="appointmentsTable"></tbody>
+    </table>
+
+    <!-- Available Doctors & Booking -->
+    <h3>Book a New Appointment</h3>
+    <label for="doctorSelect">Select Doctor:</label>
+    <select id="doctorSelect">
+        <option value="">Loading...</option>
+    </select>
+    
+    <h4>Available Time Slots:</h4>
+    <div id="timeSlots"></div>
+
+    <button id="bookAppointment">Book Appointment</button>
+
+    <br><br>
+    <button id="logout">Logout</button>
+
+    <script>
+        const patientname = localStorage.getItem("patientName"); // Assume stored during login
+        if (!patientname) {
+            alert("You must log in first.");
+            window.location.href = "patient_signup.html";
+        }
+
+        async function loadAppointments() {
+            const response = await fetch(`http://localhost:5000/appointments/${patientname}`);
+            console.log(patientname);
+            const data = await response.json();
+            const appointments = data.appointments; // Adjusted to access the 'appointments' array
+
+            console.log(appointments);
+
+            const tableBody = document.getElementById("appointmentsTable");
+            tableBody.innerHTML = "";
+
+            appointments.forEach(app => {
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td>${app.doctor}</td>  <!-- Adjusted to access 'doctor' instead of 'doctor_name' -->
+                    <td>${app.time_slot}</td>  <!-- Adjusted to access 'time_slot' instead of 'time' -->
+                    <td>
+                        <button onclick="cancelAppointment(${app.id})">Cancel</button>
+                        <button onclick="modifyAppointment(${app.id})">Modify</button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        let doctorsData = [];  // Store the doctors data
+
+        async function loadDoctors() {
+            try {
+                // Fetching available doctors
+                const response = await fetch("http://localhost:5000/doctors/available");
+
+                // Checking if the response is successful
+                if (!response.ok) {
+                    throw new Error("Failed to load doctors.");
+                }
+
+                const doctors = await response.json();
+                console.log(doctors);  // Check if doctors data is received correctly
+
+                doctorsData = doctors.doctors;  // Store the doctors' data globally
+
+                const doctorSelect = document.getElementById("doctorSelect");
+                doctorSelect.innerHTML = '<option value="">Select a Doctor</option>';  // Reset the dropdown
+
+                // Loop through the doctors array and populate the select options
+                doctorsData.forEach(doc => {
+                    const option = document.createElement("option");
+                    option.value = doc.id;  // Assuming the doctor's ID is used as the value
+                    option.textContent = doc.name;  // Assuming the doctor's name is displayed
+                    option.dataset.timeSlot = doc.time_slot; // Store the time_slot in the option
+                    doctorSelect.appendChild(option);  // Append the option to the select dropdown
+                });
+            } catch (error) {
+                console.error("Error loading doctors:", error);
+                alert("There was an error loading doctors.");
+            }
+        }
+        
+        document.getElementById("doctorSelect").addEventListener("change", function () {
+    const doctorId = this.value;
+    if (!doctorId) return;
+
+    // Get the selected doctor option using the value of 'doctorId'
+    const selectedDoctor = doctorsData.find(doc => doc.id == doctorId); // Use stored data
+
+    if (!selectedDoctor) return;
+    console.log(selectedDoctor);
+
+    let timeSlot = selectedDoctor.time_slots;
+
+    // Only split the time_slots if there are multiple time slots separated by a comma
+    if (timeSlot.includes(",")) {
+        timeSlot = timeSlot.split(",");
+    } else {
+        // If there's only one time slot, leave it as is
+        timeSlot = [timeSlot];
+    }
+
+    console.log(timeSlot);
+
+    const timeSlotsDiv = document.getElementById("timeSlots");
+    timeSlotsDiv.innerHTML = "";  // Clear previous time slots
+
+    // Loop through time_slots and create checkboxes
+    timeSlot.forEach(slot => {
+        const label = document.createElement("label");
+        const input = document.createElement("input");
+        input.type = "checkbox";
+        input.name = "timeslot";
+        input.value = slot.trim();
+        label.appendChild(input);
+        label.appendChild(document.createTextNode(slot.trim()));
+        timeSlotsDiv.appendChild(label);
+        timeSlotsDiv.appendChild(document.createElement("br"));
+    });
+});
+ // Book appointment listener
+ document.getElementById("bookAppointment").addEventListener("click", function () {
+        // Get the selected doctor and time slot
+        const doctorId = document.getElementById("doctorSelect").value; 
+        console.log(doctorId)
+        const selectedTimeSlot = document.querySelector('input[name="timeslot"]:checked');  // Get selected radio button
+        console.log(selectedTimeSlot)
+        if (!doctorId || !selectedTimeSlot) {
+            alert("Please select a doctor and a time slot.");
+            return;
+        }
+
+        const timeSlot = selectedTimeSlot.value;  // Get the selected time slot addEventListener
+   
+        const appointmentData = {
+            patient_name: patientname,  // Patient name from localStorage
+            doctor_id: doctorId,  // Doctor ID from selected doctor
+            time_slot: timeSlot  // Time slot from selected radio button
+        };
+
+        // Send a POST request to book the appointment
+        fetch('http://localhost:5000/appointments/book', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(appointmentData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            alert(data.message);  // Success message
+            loadAppointments();   // Reload appointments list
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('There was an error booking the appointment. Please try again.');
+        });
+    });
+
+        async function cancelAppointment(appointmentId) {
+            await fetch(`http://localhost:5000/appointment/${appointmentId}/cancel`, { method: "DELETE" });
+            alert("Appointment cancelled.");
+            loadAppointments();
+        }
+
+        async function modifyAppointment(appointmentId) {
+            const newTime = prompt("Enter new time:");
+            if (!newTime) return;
+
+            await fetch(`http://localhost:5000/appointment/${appointmentId}/modify`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ time: newTime })
+            });
+
+            alert("Appointment modified.");
+            loadAppointments();
+        }
+
+        document.getElementById("logout").addEventListener("click", function () {
+            localStorage.removeItem("patientId");
+            window.location.href = "index.html";
+        });
+
+        loadAppointments();
+        loadDoctors();
+    </script>
+</body>
+</html>
