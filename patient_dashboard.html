@@ -225,10 +225,11 @@
         <button id="bookAppointment">Book Appointment</button>
 
         <br><br>
-        <button id="logout">Logout</button>
+        <button id="logout" onclick="change()"`>Logout</button>
     </div>
 
-    <script>
+    <script> 
+
        // Assume stored during login 
         const Message = localStorage.getItem("message"); 
         if (!Message) {
@@ -467,6 +468,12 @@ async function updateAppointment(appointmentId, newTimeSlot) {
         alert("Failed to update appointment.");
     }
 }
+
+function change() {
+            localStorage.removeItem("message");
+            localStorage.removeItem("patientName");
+            window.location.href = "index.html";
+        }
 
     </script>
 </body>

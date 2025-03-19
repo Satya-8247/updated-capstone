@@ -133,6 +133,7 @@
                             const patientDiv = document.createElement("div");
                             patientDiv.innerHTML = `<strong>Patient Name:</strong> ${patient.patient_name} <br>
                                                     <strong>Appointment Time:</strong> ${patient.appointment_time} <br>
+                                                    <strong>Appointment Date:</strong> ${patient.appointment_date} <br>
                                                     <strong>Status:</strong> ${patient.status}<br><br>`;
                             patientListDiv.appendChild(patientDiv);
                         });
@@ -150,7 +151,7 @@
         document.getElementById("logoutButton").addEventListener("click", function() {
             localStorage.removeItem("doctor_id");
             localStorage.removeItem("doctor_name");
-            window.location.href = "doctor_signin.html"; // Redirect to the sign-in page after logout
+            window.location.href = "index.html"; // Redirect to the sign-in page after logout
         });
     </script>
 </body>

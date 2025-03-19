@@ -244,9 +244,10 @@ def get_doctor_patients(doctor_id):
 
     patient_list = [{
         "appointment_id": appt.id,
-        "patient_name": appt.patient_name,
-        "appointment_time": appt.appointment_time,
-        "status": appt.status
+        "patient_name": appt.patient_name, 
+        "appointment_time": appt.time_slot, 
+        "appointment_date":appt.date.strftime("%Y-%m-%d") , # Change format as needed
+        "status": "Booked"
     } for appt in appointments]
 
     return jsonify({"doctor": doctor.name, "patients": patient_list}), 200
