@@ -268,6 +268,55 @@ def forgot_password():
 
     return jsonify({"message": "Password updated successfully"}), 200
 
+from datetime import datetime
+@app.route('/doctor/<doctor_id>/available_slots', methods=['GET'])
+def get_available_slots(doctor_id):
+    # Get all the time slots from the doctor
+    doctor = Doctor.query.get(doctor_id)
+    all_time_slots = doctor.available_time  # Assuming available slots are stored as a comma-separated string
+    
+    # Check if there is a comma in the string, if so, split it, else treat as one time slot
+    if ',' in all_time_slots: 
+        all_time_slots = all_time_slots.split(',')  # Split into individual slots
+    else:
+        all_time_slots = [all_time_slots]  # If no comma, it's a single time slot
+    
+    print(all_time_slots)
+    
+    # Return all time slots without filtering
+    return jsonify({"available_slots": all_time_slots})
+
+
+@app.route('/appointments/<int:appointment_id>/update', methods=['PUT'])
+def update_appointment(appointment_id):
+    data = request.get_json()
+    new_time_slot = data.get('time_slot')
+
+    appointment = Appointment.query.get(appointment_id)
+    if appointment:
+        appointment.time_slot = new_time_slot
+        db.session.commit()
+        return jsonify({"message": "Appointment updated successfully."}), 200
+    return jsonify({"message": "Appointment not found."}), 404
+
+@app.route('/appointment/<int:appointment_id>', methods=['GET'])
+def get_appointment(appointment_id):
+    try:
+        # Fetch the appointment from the database using the appointmentId
+        appointment = Appointment.query.filter_by(id=appointment_id).first()
+
+        if not appointment:
+            return jsonify({"message": "Appointment not found"}), 404
+        print(appointment.doctor_id)
+        # Respond with the appointment details, including doctor_id
+        return jsonify({
+    
+            "doctor_id": appointment.doctor_id,
+
+        })
+    except Exception as e:
+        return jsonify({"message": "Server error", "error": str(e)}), 500
+
 
 
 if __name__ == '__main__':
