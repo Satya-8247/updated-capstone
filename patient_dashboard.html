@@ -156,8 +156,10 @@
         <table border="1">
             <thead>
                 <tr>
-                    <th>Doctor</th>
+                    <th>Doctor</th> 
+                    <th>specialization</th>
                     <th>Time</th>
+                    <th>Date</th>
                     <th>Action</th>
                 </tr>
             </thead>
@@ -173,6 +175,11 @@
 
         <h4>Available Time Slots:</h4>
         <div id="timeSlots"></div>
+
+        <!-- Add this below the Time Slots section -->
+<h4>Select Date:</h4>
+<select id="dateSelect"></select>
+
 
         <button id="bookAppointment">Book Appointment</button>
 
@@ -204,7 +211,9 @@
                 const row = document.createElement("tr");
                 row.innerHTML = `
                     <td>${app.doctor}</td>
+                    <td>${app.specialization}</td>
                     <td>${app.time_slot}</td>
+                    <td>${app.date}</td>
                     <td>
                         <button onclick="cancelAppointment(${app.id})">Cancel</button>
                         <button onclick="modifyAppointment(${app.id})">Modify</button>
@@ -272,39 +281,64 @@
             });
         });
 
-        document.getElementById("bookAppointment").addEventListener("click", function () {
-            const doctorId = document.getElementById("doctorSelect").value; 
-            const selectedTimeSlot = document.querySelector('input[name="timeslot"]:checked');  
-            if (!doctorId || !selectedTimeSlot) {
-                alert("Please select a doctor and a time slot.");
-                return;
-            }
+        // Populate date dropdown with the next 7 days
+function populateDateDropdown() {
+    const dateSelect = document.getElementById("dateSelect");
+    dateSelect.innerHTML = "";
+    
+    const today = new Date();
+    for (let i = 0; i < 7; i++) {
+        const futureDate = new Date();
+        futureDate.setDate(today.getDate() + i);
+        
+        const option = document.createElement("option");
+        option.value = futureDate.toISOString().split('T')[0]; // Format as YYYY-MM-DD
+        option.textContent = futureDate.toDateString(); // Example: "Mon Sep 25 2024"
+        dateSelect.appendChild(option);
+    }
+}
 
-            const timeSlot = selectedTimeSlot.value;
+// Modify booking function to include selected date
+document.getElementById("bookAppointment").addEventListener("click", function () {
+    const doctorId = document.getElementById("doctorSelect").value; 
+    const selectedTimeSlot = document.querySelector('input[name="timeslot"]:checked');  
+    const selectedDate = document.getElementById("dateSelect").value;
 
-            const appointmentData = {
-                patient_name: patientname,
-                doctor_id: doctorId,
-                time_slot: timeSlot
-            };
+    if (!doctorId || !selectedTimeSlot || !selectedDate) {
+        alert("Please select a doctor, time slot, and date.");
+        return;
+    }
 
-            fetch('http://localhost:5000/appointments/book', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(appointmentData)
-            })
-            .then(response => response.json())
-            .then(data => {
-                alert(data.message); 
-                loadAppointments();  
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('There was an error booking the appointment. Please try again.');
-            });
-        });
+    const timeSlot = selectedTimeSlot.value;
+
+    const appointmentData = {
+        patient_name: patientname,
+        doctor_id: doctorId,
+        time_slot: timeSlot,
+        date: selectedDate  // Include date in request
+    };
+
+    fetch('http://localhost:5000/appointments/book', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(appointmentData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        alert(data.message); 
+        loadAppointments();  
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('There was an error booking the appointment. Please try again.');
+    });
+});
+
+// Call function on page load
+populateDateDropdown();
+
 
         async function cancelAppointment(appointmentId) {
             await fetch(`http://localhost:5000/appointments/cancel/${appointmentId}`, { method: "DELETE" });

@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_cors import CORS  # Import CORS
+from datetime import datetime
 
 app = Flask(__name__)
 CORS(app)
@@ -21,18 +22,21 @@ class Doctor(db.Model):
     appointments = db.relationship('Appointment', backref='doctor', lazy=True) 
 
 # Patient Model with Password
+# Patient Model with Password
 class Patient(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(100), unique=True, nullable=False)
-    password = db.Column(db.String(255), nullable=False)  # New password field
+    password = db.Column(db.String(255), nullable=False)
 
+# Appointment Model with Date
 class Appointment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    doctor_id = db.Column(db.Integer, db.ForeignKey('doctor.id'), nullable=False)
     patient_name = db.Column(db.String(100), nullable=False)
-    appointment_time = db.Column(db.String(50), nullable=False)
-    status = db.Column(db.String(50), default="Booked")
+    doctor_id = db.Column(db.Integer, db.ForeignKey('doctor.id'), nullable=False)  # Foreign Key reference to Doctor
+    time_slot = db.Column(db.String(50), nullable=False)
+    date = db.Column(db.Date, nullable=False)
+
 
 @app.route('/')
 def welcome():
@@ -91,7 +95,7 @@ def signup_patient():
         return jsonify({"error": "Missing required fields"}), 400
 
     # Hash the password
-    hashed_password = generate_password_hash(password)
+    hashed_password = generate_password_hash(str(password))
 
     try:
         # Insert the patient data into the database
@@ -112,7 +116,7 @@ def signin_patient():
     patient_data = request.get_json()
     email = patient_data.get("email")
     password = patient_data.get("password")
-
+    password = str(password)
     patient = Patient.query.filter_by(email=email).first()
 
     if not patient or not check_password_hash(patient.password, password):
@@ -121,19 +125,35 @@ def signin_patient():
     return jsonify({"message": f"Welcome {patient.name}", "patient_name": patient.name}), 200
 
 
-
 @app.route('/appointments/book', methods=['POST'])
 def book_appointment():
-    data = request.get_json()
-    patient_name = data.get("patient_name")
-    doctor_id = data.get("doctor_id")
-    time_slot = data.get("time_slot")
+    data = request.json
+    patient_name = data.get('patient_name')
+    doctor_id = data.get('doctor_id')
+    time_slot = data.get('time_slot')
+    date_str = data.get('date')
 
-    new_appointment = Appointment(patient_name=patient_name, doctor_id=doctor_id, appointment_time=time_slot, status="Scheduled")
+    if not patient_name or not doctor_id or not time_slot or not date_str:
+        return jsonify({"error": "Missing required fields"}), 400
+
+    # Convert string date to date object
+    try:
+        appointment_date = datetime.strptime(date_str, "%Y-%m-%d").date()
+    except ValueError:
+        return jsonify({"error": "Invalid date format"}), 400
+
+    new_appointment = Appointment(
+        patient_name=patient_name,
+        doctor_id=doctor_id,
+        time_slot=time_slot,
+        date=appointment_date
+    )
+
     db.session.add(new_appointment)
     db.session.commit()
 
-    return jsonify({"message": "Appointment booked successfully"}), 201
+    return jsonify({"message": "Appointment booked successfully"})
+
 
 
 @app.route('/appointments/cancel/<int:appointment_id>', methods=['DELETE'])
@@ -148,20 +168,31 @@ def cancel_appointment(appointment_id):
     return jsonify({"message": "Appointment canceled successfully"}), 200
 
 
+from datetime import datetime
 
-@app.route('/appointments/<string:patient_name>', methods=['GET'])
-def get_patient_appointments(patient_name):
-    appointments = Appointment.query.filter_by(patient_name=patient_name).all()
+@app.route('/appointments/<patient_name>', methods=['GET'])
+def get_appointments(patient_name):
+    patient = Patient.query.filter_by(name=patient_name).first()
 
-    appointment_list = [{
-        "id": appt.id,
-        "patient_name": appt.patient_name,  # Add this field
-        "doctor": appt.doctor.name if appt.doctor else "Unknown Doctor",
-        "time_slot": appt.appointment_time,
-        "status": appt.status
-    } for appt in appointments]
+    if not patient:
+        return jsonify({'message': 'Patient not found'}), 404
 
-    return jsonify({"appointments": appointment_list}), 200
+    appointments = Appointment.query.join(Doctor).filter(Appointment.patient_name == patient_name).all()
+    appointment_data = []
+    for appointment in appointments:
+      
+        # Format the date field as a string
+        formatted_date = appointment.date.strftime("%Y-%m-%d")  # Change format as needed
+
+        appointment_data.append({
+            'id': appointment.id,
+            'doctor': appointment.doctor.name,
+            'specialization': appointment.doctor.specialization,
+            'time_slot': appointment.time_slot,
+            'date': formatted_date  # Use the formatted date here
+        })
+
+    return jsonify({'appointments': appointment_data})
 
 
 
