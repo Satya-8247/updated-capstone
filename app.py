@@ -220,6 +220,23 @@ def get_doctor_patients(doctor_id):
 
     return jsonify({"doctor": doctor.name, "patients": patient_list}), 200
 
+@app.route('/patient/forgot_password', methods=['POST'])
+def forgot_password():
+    data = request.get_json()
+    email = data.get("email")
+    new_password = data.get("new_password")
+
+    patient = Patient.query.filter_by(email=email).first()
+    if not patient:
+        return jsonify({"error": "Patient not found"}), 404
+
+    # Hash and update the new password
+    hashed_password = generate_password_hash(new_password)
+    patient.password = hashed_password
+    db.session.commit()
+
+    return jsonify({"message": "Password updated successfully"}), 200
+
 
 
 if __name__ == '__main__':
