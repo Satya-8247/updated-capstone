@@ -232,7 +232,7 @@
                 doctorsData.forEach(doc => {
                     const option = document.createElement("option");
                     option.value = doc.id;
-                    option.textContent = doc.name;
+                    option.textContent = `${doc.name} --> ${doc.specialization}`;
                     option.dataset.timeSlot = doc.time_slot;
                     doctorSelect.appendChild(option);
                 });

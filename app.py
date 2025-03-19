@@ -34,6 +34,10 @@ class Appointment(db.Model):
     appointment_time = db.Column(db.String(50), nullable=False)
     status = db.Column(db.String(50), default="Booked")
 
+@app.route('/')
+def welcome():
+    return jsonify({"message": "Welcome to Appointment Booking with Doctor"})
+
 # Sign Up Doctor Route (with password hashing)
 @app.route('/doctor/signup', methods=['POST'])
 def signup_doctor():
@@ -147,18 +151,18 @@ def cancel_appointment(appointment_id):
 
 @app.route('/appointments/<string:patient_name>', methods=['GET'])
 def get_patient_appointments(patient_name):
-    # Correct the query to fetch from Appointment model
-    appointments = Appointment.query.filter_by(patient_name=patient_name).all() 
+    appointments = Appointment.query.filter_by(patient_name=patient_name).all()
 
-    # Build the list of appointments with doctor details
     appointment_list = [{
         "id": appt.id,
-        "doctor": appt.doctor.name if appt.doctor else "Unknown Doctor",  # Doctor's name
-        "time_slot": appt.appointment_time,  # Appointment time
-        "status": appt.status  # Appointment status
+        "patient_name": appt.patient_name,  # Add this field
+        "doctor": appt.doctor.name if appt.doctor else "Unknown Doctor",
+        "time_slot": appt.appointment_time,
+        "status": appt.status
     } for appt in appointments]
 
     return jsonify({"appointments": appointment_list}), 200
+
 
 
 
@@ -181,7 +185,7 @@ def modify_appointment(appointment_id):
 @app.route('/doctors/available', methods=['GET'])
 def get_available_doctors():
     doctors = Doctor.query.all()
-    doctor_list = [{"id": doc.id, "name": doc.name,"time_slots":doc.available_time} for doc in doctors]
+    doctor_list = [{"id": doc.id, "name": doc.name,"time_slots":doc.available_time,"specialization":doc.specialization} for doc in doctors]
 
     return jsonify({"doctors": doctor_list}), 200
 
